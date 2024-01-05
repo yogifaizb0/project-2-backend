@@ -1,17 +1,29 @@
-const express = require('express')
-const routes = require('./routes')
-const { errorHandler } = require('./middlewares/errorHandler')
+require("dotenv").config();
 
-const app = express()
-const port = 3000
+const express = require("express");
+const routes = require("./routes");
+const { errorHandler } = require("./middlewares/errorHandler");
+const { sequelize } = require("./models/index");
 
-app.use(express.urlencoded({extended: false}))
-app.use(express.json())
-app.use('/', routes)
-app.use(errorHandler)
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Koneksi ke database berhasil.");
+  })
+  .catch((err) => {
+    console.error("Koneksi ke database gagal:", err);
+  });
+
+const app = express();
+const port = process.env.port || 3000;
+
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use("/", routes);
+app.use(errorHandler);
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`Example app listening on port ${port}`);
+});
 
-module.exports = { app }
+module.exports = { app };
